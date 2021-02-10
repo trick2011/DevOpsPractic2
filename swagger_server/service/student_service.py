@@ -16,6 +16,14 @@ student_db = TinyDB(db_file_path)
 
 
 def add_student(student):
+    incomplete = False
+    incomplete = True if student.first_name is None else incomplete
+    incomplete = True if student.last_name is None else incomplete
+    # incomplete = True if student.grades is None else incomplete
+
+    if incomplete:
+        return 'missing parameter', 405
+
     queries = []
     query = Query()
     queries.append(query.first_name == student.first_name)
@@ -37,6 +45,9 @@ def get_student_by_id(student_id, subject):
     student = Student.from_dict(student)
     if not subject:
         return student
+    else:
+        if subject in student.grades:
+            return student
 
 
 def delete_student(student_id):

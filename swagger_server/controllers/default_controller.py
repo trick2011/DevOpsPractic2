@@ -1,7 +1,7 @@
 import connexion
 import six
 
-import swagger_server.service.student_service as student_service  # noqa: E501
+import swagger_server.service.student_service as student_service
 from swagger_server.models.student import Student  # noqa: E501
 from swagger_server import util
 
