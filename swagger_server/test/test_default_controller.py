@@ -57,7 +57,7 @@ class TestDefaultController(BaseTestCase):
         """
         query_string = [('last_name', 'last_name_example')]
         response = self.client.open(
-            '/service-api/student',
+            '/service-api/student/',
             method='GET',
             query_string=query_string)
         self.assert200(response,

@@ -50,6 +50,17 @@ def get_student_by_id(student_id, subject):
             return student
 
 
+def get_student_by_last_name(last_name):
+    queries = []
+    query = Query()
+    queries.append(query.last_name == last_name)
+    query = reduce(lambda a, b: a & b, queries)
+    res = student_db.search(query)
+    if res:
+        return res[0]
+
+
+
 def delete_student(student_id):
     student = student_db.get(doc_id=int(student_id))
     if not student:
