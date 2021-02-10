@@ -15,35 +15,35 @@ class Student(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, student_id: int=None, first_name: str=None, laste_name: str=None, grades: object=None):  # noqa: E501
+    def __init__(self, student_id: int=None, first_name: str=None, last_name: str=None, grades: object=None):  # noqa: E501
         """Student - a model defined in Swagger
 
         :param student_id: The student_id of this Student.  # noqa: E501
         :type student_id: int
         :param first_name: The first_name of this Student.  # noqa: E501
         :type first_name: str
-        :param laste_name: The laste_name of this Student.  # noqa: E501
-        :type laste_name: str
+        :param last_name: The last_name of this Student.  # noqa: E501
+        :type last_name: str
         :param grades: The grades of this Student.  # noqa: E501
         :type grades: object
         """
         self.swagger_types = {
             'student_id': int,
             'first_name': str,
-            'laste_name': str,
+            'last_name': str,
             'grades': object
         }
 
         self.attribute_map = {
             'student_id': 'student_id',
             'first_name': 'first_name',
-            'laste_name': 'laste_name',
+            'last_name': 'last_name',
             'grades': 'grades'
         }
 
         self._student_id = student_id
         self._first_name = first_name
-        self._laste_name = laste_name
+        self._last_name = last_name
         self._grades = grades
 
     @classmethod
@@ -100,25 +100,25 @@ class Student(Model):
         self._first_name = first_name
 
     @property
-    def laste_name(self) -> str:
-        """Gets the laste_name of this Student.
+    def last_name(self) -> str:
+        """Gets the last_name of this Student.
 
 
-        :return: The laste_name of this Student.
+        :return: The last_name of this Student.
         :rtype: str
         """
-        return self._laste_name
+        return self._last_name
 
-    @laste_name.setter
-    def laste_name(self, laste_name: str):
-        """Sets the laste_name of this Student.
+    @last_name.setter
+    def last_name(self, last_name: str):
+        """Sets the last_name of this Student.
 
 
-        :param laste_name: The laste_name of this Student.
-        :type laste_name: str
+        :param last_name: The last_name of this Student.
+        :type last_name: str
         """
 
-        self._laste_name = laste_name
+        self._last_name = last_name
 
     @property
     def grades(self) -> object:

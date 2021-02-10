@@ -1,9 +1,9 @@
 import connexion
 import six
 
+import swagger_server.service.student_service as student_service  # noqa: E501
 from swagger_server.models.student import Student  # noqa: E501
 from swagger_server import util
-from swagger_server.service import student_service
 
 
 def add_student(body):  # noqa: E501
@@ -16,6 +16,7 @@ def add_student(body):  # noqa: E501
 
     :rtype: str
     """
+
     if connexion.request.is_json:
         body = Student.from_dict(connexion.request.get_json())  # noqa: E501
     return student_service.add_student(body)
@@ -53,4 +54,3 @@ def get_student_by_id(student_id, subject=None):  # noqa: E501
     if res:
         return res
     return 'Not Found', 404
-

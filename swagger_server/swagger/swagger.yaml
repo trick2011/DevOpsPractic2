@@ -99,13 +99,13 @@ definitions:
         format: "int64"
       first_name:
         type: "string"
-      laste_name:
+      last_name:
         type: "string"
       grades:
         type: "object"
         properties: {}
     example:
-      laste_name: "laste_name"
       student_id: 0
+      last_name: "last_name"
       grades: "{}"
       first_name: "first_name"
