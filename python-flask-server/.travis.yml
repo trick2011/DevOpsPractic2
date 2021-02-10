@@ -5,9 +5,7 @@ services:
 language: python
 python:
   - "3.6"
-
-
-
+  
 before_install:
   - docker version
   - docker info
@@ -35,8 +33,8 @@ script:
 
 after_success:
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - docker tag trick2011/devops_practice_2 trick2011/devops_practice_2
-  - docker push trick2011/devops_practice_2
+  - docker tag trick2011/swagger_server trick2011/swagger_server
+  - docker push trick2011/swagger_server
 dd:
   secure: dl65pwHd7zowm2z7Ki+KOdngLiWMkSHycUneouXyITW/ZwSpXWCEiYh/fLAE8Y8cAfX/H8EBuFToVC2SPhSlHn0ARt9FOYxsxfEhalmwg5Zy3qv7HL+ayX5UhGuXCtnmSxbDKbicWbpywk7/cD3su/y0iqE6g2T3ifxaYpPPtIPj233FzCiCnhOZPML/JLcNkIGrDxnuiTiqV5iWymmQzrrr4YoCeu02QPpaq9tvMbWcVdbxNXVVKDVTQRNGEKR3SaByi8j4ISWiDk3oXJq0Jm57I8aggpJwyHs8beVoHJtJzHc4TrD+Ph6Khfk/0rmik3tyPJB8Mnuf/yfz9/ybYLg1ptFkRO7dxwdJDOmgURQDhnjYmuKxPd8CDWrQk8Lm64HHxq4ySSHQA5heQgoZ2PwTJVD5bR6YDL4HEH3VSNE3xK/JiiN6o7ZceJBgQXxfuJOZttzgS78q1gk1AxISpnNimBQApqtJBeeNNZdI1i6TSh18QAhAXTrJmo3MoDAi9kO0tEv3ycZ+I88UPHVsXsmNnCOLbj8nAI6wyKEoUimQaGcVNG7I3LwaB++woC3/G2HXxjdloE3gMK7tgdh05Sc/WpyrDEl2m5oKSKMF8gSwG6N6BR29lopf3s6RStkPi83b03lFJlvTJPYdNsE+clDUZjkcuot9dihlAA4KqJs=
 env:
