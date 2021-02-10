@@ -1,13 +1,46 @@
+sudo: required
+services:
+  - docker
 # ref: https://docs.travis-ci.com/user/languages/python
 language: python
 python:
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  #- "3.5-dev" # 3.5 development branch
-  #- "nightly" # points to the latest development branch e.g. 3.6-dev
-# command to install dependencies
-install: "pip install -r requirements.txt"
-# command to run tests
-script: nosetests
+  - "3.6"
+
+
+
+before_install:
+  - docker version
+  - docker info
+install:
+    - npm install newman
+    - pip install -r requirements.txt
+    - pip install -r test-requirements.txt
+    - pip install nose
+    - pip install Flask-Testing
+before_script:
+    - node --version
+    - npm --version
+    - node_modules/.bin/newman --version
+
+script:
+- python -m unittest discover
+- docker build -t swagger-spring-example:1.0.0 .
+- docker run --name example_api -d -t -p 127.0.0.1:8080:8080 swagger-spring-example:1.0.0
+- docker ps
+- count=0 && until $(curl --output /dev/null --silent --head --fail http://localhost:8080);
+  do printf '.' && sleep 3 && count=$((count+1)) && if [ $count -gt 5 ]; then break;
+  fi; done
+- docker logs example_api
+- node_modules/.bin/newman run tests/postman_collection.json -e tests/postman_environment.json
+
+after_success:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker tag devops_practice_2/swagger_server devops_practice_2/swagger_server
+  - docker push devops_practice_2/swagger_server
+dd:
+  secure: dl65pwHd7zowm2z7Ki+KOdngLiWMkSHycUneouXyITW/ZwSpXWCEiYh/fLAE8Y8cAfX/H8EBuFToVC2SPhSlHn0ARt9FOYxsxfEhalmwg5Zy3qv7HL+ayX5UhGuXCtnmSxbDKbicWbpywk7/cD3su/y0iqE6g2T3ifxaYpPPtIPj233FzCiCnhOZPML/JLcNkIGrDxnuiTiqV5iWymmQzrrr4YoCeu02QPpaq9tvMbWcVdbxNXVVKDVTQRNGEKR3SaByi8j4ISWiDk3oXJq0Jm57I8aggpJwyHs8beVoHJtJzHc4TrD+Ph6Khfk/0rmik3tyPJB8Mnuf/yfz9/ybYLg1ptFkRO7dxwdJDOmgURQDhnjYmuKxPd8CDWrQk8Lm64HHxq4ySSHQA5heQgoZ2PwTJVD5bR6YDL4HEH3VSNE3xK/JiiN6o7ZceJBgQXxfuJOZttzgS78q1gk1AxISpnNimBQApqtJBeeNNZdI1i6TSh18QAhAXTrJmo3MoDAi9kO0tEv3ycZ+I88UPHVsXsmNnCOLbj8nAI6wyKEoUimQaGcVNG7I3LwaB++woC3/G2HXxjdloE3gMK7tgdh05Sc/WpyrDEl2m5oKSKMF8gSwG6N6BR29lopf3s6RStkPi83b03lFJlvTJPYdNsE+clDUZjkcuot9dihlAA4KqJs=
+env:
+  global:
+  - secure: QyquGszbPy3iSyevrMQjIYYnlZzxP5VB9bkHrbpd0c2i7RPr9mKdx118UUFwx6hGb77i4icVQOqUjJZMh1p6F0KEKt9v7uKZwUxVBr8kxjWVkoDClAtYrTJeLCMjAFOoEp+kagy6HNbf4A4T7JVdzXl6oMvZIBKNgExOTu6MbIJbK35EXkjb2C9apmp4XY+NizkeazCLQAd2IjTDV/907efaO1BKqSdCl1/ghrrwK5OOH2MYdkeB6/1Zxve3Qv0miV0QuJgA3Bsvt7aSu0hJ883oG1ca60q8lR6ImWYKZxFrQbHKctKPwnNHJmsgsgjEzweRBJos5+MxWaDP0cUWvXxwFqgvEYht9Ymyp2W9bcx/D3qXFQB5Y8vJtcl1xlcU8tveuI2FbXnkeV1gIIXz9KOelRyJ2rscUZ8YVZ8l1Jq8aT82sTQo4Z3wxjuByq6D46md3wsiW9MJfg355R6bVmpzfBzGzMYFakkz/lL06kS8EbGCAedrF2qx5tcMzuoVbYM9p3n9cD3FB4p6aicUKa/HzdL7EpLGSLJ5JQa/nYx/eQLD5AGTAnwvPdRLCu+EbFOtN/IxJWzvQMK/j6uUqBDpQ04VIrg7hycMlo0hyDGhGhZfGgpocMHQp7Nwf8SojGiT3r8gvQ4EYB08aAoRPTv6sjZKAyuFBtbVgJ4MfJA=
+  - secure: pkJsHIhBscyUMJBqJg5PAUJKbLoXEw7n7DmoTpCLdLDMYJzEBdl9KD1B7Y1DGzPwrcB/S+9o/vhQyeiqPoZVGKmmOkv9/eM5hfXPkUG9RlpTRSTahANr/Y/tfXUuOGStxteTzgW54s7+ibgU5osh92DGzsi1hDsU+3TliXOB9ZAjzYsN8DUNthfayWloC+ezIg/HReEbeIbtzgx7kDLb8y4VDPoLAQRNrWelJw2RRsWdfQoIBhdy90Gh5GF0/wHIIrn42+fk+C2v10VqJGndNeZe69JYXQhAP3UJcgiLbsIrCl3URbMq1vt1f2jnRweznVPoCPVOSJeEgi+AAV99H5fDIN2ZGB+R/eo9zLlVttHN560vJQv+iZH5d1KSya18u0WozVPQJuOtt4ZakAsUqp7tv1qvaKHUIw70QhLQJ4WyPcYLe239Yz/6gZaREkaS7FqRgk7ttquPcg5pCZdjZvuEP4A38CL15bt1GzKlbstbFIX6pt3A3JCCOdQWfnunYjoPBXYQy0BPKnGBbSSM501KpTTfGsHhpHP238zhNxW9/MFZziJM2caqbvsnJcoaqRGdqp8CrCski5Li8KgcOigU/EDnsq2RnBbrjUGBu+8fQ6gl0VPyuMAgtuSjs+ggnBzJf5yhaoB248WBw0wUfNbjMPhFulA++tG4UurY2wg=
+  - secure: PxxH9ojYgmQIhODrnwq3hAeo9IbY+J0YuhAUXasqJIFu48gzEVcWv7AxWi624py/4JfIYSb7OwF9bHuLfaiEr+YxuLrVkW9+Kg/U3I7akAYELmGS+62yp9XmNe6RV1qcy0dbUFO//cNJvYwWnOEglK0Kh47HolvfgeP119khFRTZs0ePcd84+L+YjPAM9x/W/fZzf6BvB4O5H6z35bm389h21ULOWRDxl8Hxkb6dqUwSVCwMx0bU6FoJD6h4Y3q3jBUtqFfk6rOn7OkQ0CRW+7SeHpHYzcM8a9Q+dACIyuWEYzaTLoLr7ASkVJBTqRFrvmFTKs7G7YIuyZqWSGAoM+/PJMMl1QL0lIR+0y7b5UXxrlFFJjtSWdKmH5kA88bZlkXgcmQnvVt1Nv8ryv/UbmC+7LS+eXN5G4E/tW8w20kd42Fg4N9rHFp0GUfkMLB2Rb1eJPoILahF/maSY0Qcwf7p47zYsStueEeQiD6cgzbnTYVgrp9YOqPbZgRRSiEWdZMmbGXVXYI+N/IRefMpcufjbEK3gN31CBfYxgtPyECP+3Sd0IlnmyluEu7IQ9KT3YNu5OASaPjiM9gUp/2VvzFrs3SDZpK9D5nfnwcQ0ZSKrvBeH4Qz9iBuVnRLH02ivm7lhUbgFtAriXSpDLLyAvEMO3h27mVoOnMYanr0w64=
